@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <!-- Global site tag (gtag.js) - Google Analytics -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-ZXLXQVDW9P"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag('js', new Date());
+
+    gtag('config', 'G-ZXLXQVDW9P');
+  </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+  <title>Handwriting Number Recognizer</title>
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+  <header>
+    <h1>Handwriting Number Recognizer</h1>
+    <h3>Brain.jsによる手書き数字の認識</h3>
+    <hr>
+  </header>
+  <main>
+    <div class="result">
+      <canvas id="letter" width="28" height="28"></canvas> を
+      <span id="recognition">“&ensp;”</span>と識別しました
+    </div>
+    <div class="recognizer">
+      <canvas id="canvas" width="280" height="280"></canvas>
+      <br />
+      <input type="button" value="消去" id="clear">
+    </div>
+    <p class="description">
+      <a href="https://brain.js.org/">Brain.js</a>を用いて、<a
+        href="http://yann.lecun.com/exdb/mnist/">MNIST</a>の60,000枚の手書き数字の画像をニューラルネットワークに学習させました。MNISTの手書き数字と同様に、描画範囲いっぱいにではなく中央付近に納まるように数字を書くと正しく識別されやすいようです。MNISTの10,000枚のテストデータを用いたところ、各数字の識別率に関しては“１”と“２”が最高となりましたが、どの数字も95%を上回りました。
+    </p>
+    <p class="title mbe0">各数字の識別率</p>
+    <div class="canvas">
+      <canvas id="accuracy"></canvas>
+    </div>
+    <p class="description">
+      下の図は、テストデータの各数字がニューラルネットワークによってどのように学習されたのかを表しています。例えば、テストデータの“０”がどの数字として識別されたのかを知りたい場合は、一番最初の行である０行目(インデックスは0から始まるものとします)を見ます。セルの色の濃度が濃ければ濃いほど、その数字として識別される確率が高いことを示しています。
+    </p>
+    <p class="title">各数字(行)がどの数字(列)として識別されたか</p>
+    <table></table>
+    <p class="description">
+      この図を見ていると、私たち人間でも共感できるような特徴が見て取れます。例えば、“４”と“９”は書き方によっては人間が見ても形が似るため、ニューラルネットワークでも互いに誤って識別される確率が高かったです。また、“４”と書いたつもりの数字が“９”と誤認識される確率(5行10列目)は高いですが、“９”と書いたつもりの数字が“４”と誤認識される確率(10行5列目)はそれほど高くないのも興味深いです。
+    </p>
+    <p class="description">
+      学習に用いたニューラルネットワークの構成を下図に示します。
+    </p>
+    <div class="figure">
+      <img src="src/NetworkArchitecture.svg">
+      <p class="title mbs0">ネットワーク構成図</p>
+    </div>
+    <p class="description">
+      画像データの学習では畳み込みニューラルネットワーク(CNN: Convolutional Neural
+      Network)が用いられることが多いですが、Brain.jsは現時点でCNNに未対応であるため、最も単純なニューラルネットワークの1つであるフィードフォワードニューラルネットワーク(FNN: Feedforward
+      Neural
+      Network)を用いました。今回使用したFNNは、入力層・中間層・出力層がそれぞれ1層ずつの計3層で構成されています。ノード数は、入力層はMNISTの画像サイズ(28x28)である784で、中間層は392、出力層は0～9の数字に対応する10となっており、すべてのノードは各層の間で全結合されています。学習方法には、確率的勾配降下法の一種である
+      <a
+        href="https://ja.wikipedia.org/wiki/%E7%A2%BA%E7%8E%87%E7%9A%84%E5%8B%BE%E9%85%8D%E9%99%8D%E4%B8%8B%E6%B3%95#%E3%83%A2%E3%83%A1%E3%83%B3%E3%82%BF%E3%83%A0%E6%B3%95">モメンタム法</a>が用いられており、図に記したパラメータ設定で20,000回学習を行いました。
+    </p>
+  </main>
+  <footer>
+    &copy; 2023 Keisuke Konta
+  </footer>
+  <script src="https://unpkg.com/chart.js@3.6.0/dist/chart.min.js"></script>
+  <script src="https://unpkg.com/brain.js@1.4.10/browser.min.js"></script>
+  <script src="js/script.js"></script>
+</body>
+
+</html>
